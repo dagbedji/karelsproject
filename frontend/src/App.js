@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext, createContext } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import axios from 'axios';
 import { Toaster } from './components/ui/toaster';
-import { toast } from './components/ui/use-toast';
+import { toast } from './hooks/use-toast';
 import { Button } from './components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from './components/ui/card';
 import { Input } from './components/ui/input';
@@ -157,7 +157,7 @@ const CartProvider = ({ children }) => {
 };
 
 // Header Component
-const Header = () => {
+const Header = ({ onAuthClick }) => {
   const { user, logout } = useAuth();
   const { cart, cartOpen, setCartOpen } = useCart();
   const [searchTerm, setSearchTerm] = useState('');
@@ -208,7 +208,7 @@ const Header = () => {
               </Button>
             </div>
           ) : (
-            <Button size="sm">Sign In</Button>
+            <Button size="sm" onClick={() => onAuthClick('login')}>Sign In</Button>
           )}
         </div>
       </div>
@@ -276,7 +276,7 @@ const ProductCard = ({ product }) => {
 };
 
 // Home Component
-const Home = () => {
+const Home = ({ onAuthClick }) => {
   const [products, setProducts] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState('');
   const [loading, setLoading] = useState(true);
@@ -330,7 +330,11 @@ const Home = () => {
           <p className="text-xl md:text-2xl text-gray-600 mb-8 max-w-3xl mx-auto">
             Discover premium hair extensions, wigs, and accessories that enhance your natural beauty
           </p>
-          <Button size="lg" className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-lg px-8 py-6">
+          <Button 
+            size="lg" 
+            className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-lg px-8 py-6"
+            onClick={() => document.getElementById('products').scrollIntoView({ behavior: 'smooth' })}
+          >
             Shop Collection
           </Button>
         </div>
@@ -363,7 +367,7 @@ const Home = () => {
       </section>
 
       {/* Products */}
-      <section className="py-16">
+      <section id="products" className="py-16">
         <div className="container px-4">
           <h2 className="text-3xl font-bold text-center mb-12">Featured Products</h2>
           {loading ? (
@@ -593,15 +597,19 @@ const Footer = () => {
 function App() {
   const [authModal, setAuthModal] = useState({ isOpen: false, mode: 'login' });
 
+  const handleAuthClick = (mode) => {
+    setAuthModal({ isOpen: true, mode });
+  };
+
   return (
     <AuthProvider>
       <CartProvider>
         <Router>
           <div className="min-h-screen flex flex-col">
-            <Header />
+            <Header onAuthClick={handleAuthClick} />
             <main className="flex-1">
               <Routes>
-                <Route path="/" element={<Home />} />
+                <Route path="/" element={<Home onAuthClick={handleAuthClick} />} />
               </Routes>
             </main>
             <Footer />
