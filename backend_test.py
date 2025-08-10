@@ -111,7 +111,7 @@ class HairEcommerceAPITester:
         """Test user registration"""
         timestamp = datetime.now().strftime('%H%M%S')
         user_data = {
-            "email": f"test_user_{timestamp}@example.com",
+            "email": f"testuser{timestamp}@example.com",
             "first_name": "John",
             "last_name": "Doe",
             "password": "testpass123"
